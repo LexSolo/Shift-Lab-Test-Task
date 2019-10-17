@@ -1,0 +1,295 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.CFTTestTaskBackend;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+
+public class Product {
+    private BufferedReader reader;
+    private StringBuilder builder;
+    private String name;
+    private double price;
+    private int value;
+    private double sum;
+    private String[] productList;
+    private ArrayList<Product> products;
+    ArrayList<Product> userProducts;
+    private int orderID;
+    private String userInfo;
+    private String headInfo;
+    private String productsInfo;
+    private String totalInfo;
+
+    Product() {
+        this.reader = new BufferedReader(new InputStreamReader(System.in));
+        this.builder = new StringBuilder();
+        this.productList = new String[15];
+        this.products = new ArrayList(this.productList.length);
+        this.userProducts = new ArrayList();
+        this.orderID = (int)(Math.random() * 100000.0D);
+        this.productsInfo = "";
+    }
+
+    Product(String name, double price, int value, double sum) {
+        this.reader = new BufferedReader(new InputStreamReader(System.in));
+        this.builder = new StringBuilder();
+        this.productList = new String[15];
+        this.products = new ArrayList(this.productList.length);
+        this.userProducts = new ArrayList();
+        this.orderID = (int)(Math.random() * 100000.0D);
+        this.productsInfo = "";
+        this.name = name;
+        this.price = price;
+        this.value = value;
+        this.sum = sum;
+    }
+
+    public void readingFile() throws FileNotFoundException {
+        String productsListFile = "ProductsList.txt";
+        FileInputStream fis = new FileInputStream(productsListFile);
+
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
+
+            String s;
+            try {
+                for(int i = 0; (s = reader.readLine()) != null; ++i) {
+                    this.productList[i] = s;
+                }
+            } catch (Throwable var7) {
+                try {
+                    reader.close();
+                } catch (Throwable var6) {
+                    var7.addSuppressed(var6);
+                }
+
+                throw var7;
+            }
+
+            reader.close();
+        } catch (IOException var8) {
+            var8.printStackTrace();
+        }
+
+    }
+
+    public double round(double d) {
+        d = (double)Math.round(d * 10.0D) / 10.0D;
+        return d;
+    }
+
+    public void createProducts() {
+        double i = 0.0D;
+        int j = 0;
+        String[] var4 = this.productList;
+        int var5 = var4.length;
+
+        for(int var6 = 0; var6 < var5; ++var6) {
+            String s = var4[var6];
+            this.products.add(new Product(s, i += 12.46D, j, i * (double)j));
+        }
+
+        Product p;
+        for(Iterator var8 = this.products.iterator(); var8.hasNext(); p.sum = this.round(p.sum)) {
+            p = (Product)var8.next();
+            p.price = this.round(p.price);
+        }
+
+    }
+
+    public void takeUserInput() throws IOException {
+        String userInput = " ";
+        System.out.println("Вы можете вводить строки с наименованием товаров и их количеством через клавишу Enter. После окончания ввода нажмите клавишу Enter ещё раз для заполнения корзины товаров.");
+        System.out.println("Введите наименование товара и его количество через пробел (пример: <товар> <количество>) :");
+
+        while(true) {
+            while(true) {
+                boolean flag;
+                do {
+                    if (userInput.isEmpty()) {
+                        return;
+                    }
+
+                    flag = true;
+                    userInput = this.reader.readLine();
+                } while(userInput.equals(""));
+
+                String[] productValue = userInput.split(" ");
+
+                for(int i = 0; i < this.products.size(); ++i) {
+                    Product p = (Product)this.products.get(i);
+                    String nameProduct = p.name;
+                    String input = productValue[0];
+                    int inputValue = Integer.parseInt(productValue[1]);
+                    if (this.userProducts.size() != 0) {
+                        Iterator var9 = this.userProducts.iterator();
+
+                        while(var9.hasNext()) {
+                            Product pp = (Product)var9.next();
+                            String up = pp.name;
+                            if (input.equalsIgnoreCase(up)) {
+                                pp.value += inputValue;
+                                pp.sum += (double)inputValue * p.price;
+                                pp.sum = this.round(pp.sum);
+                                flag = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (flag && input.equalsIgnoreCase(nameProduct)) {
+                        p.value += inputValue;
+                        p.sum = p.price * (double)p.value;
+                        p.sum = this.round(p.sum);
+                        this.userProducts.add(p);
+                        break;
+                    }
+
+                    if (nameProduct.equals(((Product)this.products.get(this.products.size() - 1)).name)) {
+                        System.out.println("Введите корректное наименование товара.");
+                    } else if (!flag) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public void printList() {
+        String[] var1 = this.productList;
+        int var2 = var1.length;
+
+        for(int var3 = 0; var3 < var2; ++var3) {
+            String s = var1[var3];
+            System.out.println(s);
+        }
+
+    }
+
+    public void printOrder() {
+        String user = "Иванов Иван Иванович";
+        Calendar calendar = Calendar.getInstance();
+        String[] months = new String[]{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
+        int day = calendar.get(5);
+        String month = months[calendar.get(2)];
+        int year = calendar.get(1);
+        String date = day + "." + month + "." + year;
+        this.userInfo = "Заказ №" + this.orderID + " " + user + " " + date + "\n\n";
+        System.out.print(this.userInfo);
+        this.printHead();
+        this.printBasket();
+        this.printTotal();
+    }
+
+    public void printHead() {
+        String space = " ";
+        String name = "Название";
+        String nameLength = space.repeat(20 - name.length());
+        String price = "Цена";
+        String priceLength = space.repeat(20 - price.length());
+        String value = "Количество";
+        String valueLength = space.repeat(15 - value.length());
+        String sum = "Сумма";
+        String sumLength = space.repeat(20 - sum.length());
+        this.headInfo = name + nameLength + price + priceLength + value + valueLength + sum + sumLength + "\n";
+        System.out.println(this.headInfo);
+    }
+
+    public void printProduct(Product p) {
+        String space = " ";
+        String productLength = space.repeat(20 - p.name.length());
+        String priceLength = String.valueOf(p.price);
+        priceLength = space.repeat(20 - priceLength.length());
+        String valueLength = Integer.toString(p.value);
+        valueLength = space.repeat(15 - valueLength.length());
+        String sumLength = String.valueOf(p.sum);
+        sumLength = space.repeat(20 - sumLength.length());
+        this.productsInfo = this.productsInfo + p.name + productLength + p.price + priceLength + p.value + valueLength + p.sum + sumLength + "\n";
+    }
+
+    public void printBasket() {
+        this.productsInfo = "";
+
+        for(int i = this.userProducts.size() - 1; i > 0; --i) {
+            for(int j = 0; j < i; ++j) {
+                if (((Product)this.userProducts.get(j)).price > ((Product)this.userProducts.get(j + 1)).price) {
+                    Product firstSwap = (Product)this.userProducts.get(j);
+                    Product secondSwap = (Product)this.userProducts.get(j + 1);
+                    this.userProducts.set(this.userProducts.indexOf(this.userProducts.get(j + 1)), firstSwap);
+                    this.userProducts.set(this.userProducts.indexOf(this.userProducts.get(j)), secondSwap);
+                }
+            }
+        }
+
+        Iterator var5 = this.userProducts.iterator();
+
+        while(var5.hasNext()) {
+            Product p = (Product)var5.next();
+            this.printProduct(p);
+        }
+
+        System.out.print(this.productsInfo);
+    }
+
+    public void printTotal() {
+        double total = 0.0D;
+
+        for(Iterator var3 = this.userProducts.iterator(); var3.hasNext(); total = this.round(total)) {
+            Product p = (Product)var3.next();
+            total += p.sum;
+        }
+
+        this.totalInfo = "\nИтого: " + total;
+        System.out.println(this.totalInfo);
+    }
+
+    public void fillBuilder() {
+        if (this.productsInfo.isEmpty()) {
+            this.builder.append("Заказ не сформирован, ничего не заказано. Вы можете вернуться в программу и произвести оформление заказа.");
+        } else {
+            this.builder.append(this.userInfo).append(this.headInfo).append(this.productsInfo).append(this.totalInfo).append("\n");
+        }
+
+    }
+
+    public void writingFile() {
+        String fileName = "userOrder.txt";
+        if (this.builder.length() == 0) {
+            this.fillBuilder();
+        }
+
+        try {
+            FileWriter writer = new FileWriter(fileName);
+
+            try {
+                writer.write(String.valueOf(this.builder));
+                writer.flush();
+            } catch (Throwable var6) {
+                try {
+                    writer.close();
+                } catch (Throwable var5) {
+                    var6.addSuppressed(var5);
+                }
+
+                throw var6;
+            }
+
+            writer.close();
+        } catch (IOException var7) {
+            var7.printStackTrace();
+        }
+
+    }
+}
