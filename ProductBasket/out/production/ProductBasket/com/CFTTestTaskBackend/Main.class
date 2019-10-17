@@ -1,0 +1,97 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.CFTTestTaskBackend;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class Main {
+    private static boolean flag = true;
+
+    public Main() {
+    }
+
+    public static void main(String[] args) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        Product product = new Product();
+
+        try {
+            product.readingFile();
+        } catch (FileNotFoundException var8) {
+            var8.printStackTrace();
+        }
+
+        product.createProducts();
+
+        while(true) {
+            while(flag) {
+                System.out.println("\nВыберите действие:\n1 - сделать заказ;\n2 - проверить состояние корзины;\n3 - просмотреть справочник товаров;\n0 - выход из программы.\n");
+
+                int answer;
+                while(true) {
+                    try {
+                        answer = Integer.parseInt(reader.readLine());
+                        System.out.println();
+                        break;
+                    } catch (Exception var9) {
+                        System.out.println("Допустим ввод только чисел.");
+                    }
+                }
+
+                switch(answer) {
+                case 0:
+                    product.writingFile();
+                    System.out.println("Все данные по вашему заказу записаны в файл \"userOrder.txt\", который находится в папке с данным проектом.");
+                    System.out.println("Спасибо за посещение, до скорых встреч!");
+                    flag = false;
+                    break;
+                case 1:
+                    try {
+                        product.takeUserInput();
+                    } catch (IOException var7) {
+                        var7.printStackTrace();
+                    }
+                    break;
+                case 2:
+                    if (!product.userProducts.isEmpty()) {
+                        product.printOrder();
+                    } else {
+                        System.out.println("В корзине пока нет товаров, заказ не сформирован. Хотите выбрать товары (1 - да, 0 - нет) ?");
+
+                        int answer2;
+                        while(true) {
+                            try {
+                                answer2 = Integer.parseInt(reader.readLine());
+                                break;
+                            } catch (Exception var10) {
+                                System.out.println("Допустим ввод только чисел.");
+                            }
+                        }
+
+                        switch(answer2) {
+                        case 0:
+                        default:
+                            break;
+                        case 1:
+                            try {
+                                product.takeUserInput();
+                            } catch (IOException var6) {
+                                var6.printStackTrace();
+                            }
+                        }
+                    }
+                    break;
+                case 3:
+                    product.printList();
+                }
+            }
+
+            return;
+        }
+    }
+}
